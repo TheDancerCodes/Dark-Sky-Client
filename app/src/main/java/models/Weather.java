@@ -12,6 +12,9 @@ public class Weather {
     @SerializedName("longitude")
     @Expose
     private Double longitude;
+    @SerializedName("currently")
+    @Expose
+    private Currently currently;
 
 
     public Double getLatitude() {
@@ -28,5 +31,13 @@ public class Weather {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public Currently getCurrently() {
+        return currently;
+    }
+
+    public void setCurrently(Currently currently) {
+        this.currently = currently;
     }
 }
