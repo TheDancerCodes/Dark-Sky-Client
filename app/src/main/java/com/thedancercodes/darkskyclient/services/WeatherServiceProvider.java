@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class WeatherServiceProvider {
-    private static final String BASE_URL = "https://api.darksky.net/forecast/<YOUR-API_KEY>/1.2921,36.8219/";
+    private static final String BASE_URL = "https://api.darksky.net/forecast/<YOUR-API_KEY>/";
     private static final String TAG = WeatherServiceProvider.class.getSimpleName();
     private Retrofit retrofit;
 
@@ -36,13 +36,13 @@ public class WeatherServiceProvider {
         return this.retrofit;
     }
 
-    public void getWeather() {
+    public void getWeather(double lat, double lng) {
         // Implementation of WeatherService Interface
         WeatherService weatherService = getRetrofit().create(WeatherService.class);
 
         // Each Call from the created WeatherService can make a synchronous or asynchronous HTTP
         // request to the remote webserver.
-        Call<Weather> weatherData = weatherService.getWeather();
+        Call<Weather> weatherData = weatherService.getWeather(lat, lng);
         weatherData.enqueue(new Callback<Weather>() {
             @Override
             public void onResponse(Call<Weather> call, Response<Weather> response) {

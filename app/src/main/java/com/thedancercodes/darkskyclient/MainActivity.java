@@ -25,8 +25,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        requestCurrentWeather(1.2921, 36.8219);
+    }
+
+    private void requestCurrentWeather(double lat, double lng) {
         // Implement Weather Service Provider
         WeatherServiceProvider weatherServiceProvider = new WeatherServiceProvider();
-        weatherServiceProvider.getWeather();
+        weatherServiceProvider.getWeather(lat, lng);
     }
 }
