@@ -36,29 +36,13 @@ public class WeatherServiceProvider {
         return this.retrofit;
     }
 
-    public void getWeather(double lat, double lng) {
+    public void getWeather(double lat, double lng, Callback callback) {
         // Implementation of WeatherService Interface
         WeatherService weatherService = getRetrofit().create(WeatherService.class);
 
         // Each Call from the created WeatherService can make a synchronous or asynchronous HTTP
         // request to the remote webserver.
         Call<Weather> weatherData = weatherService.getWeather(lat, lng);
-        weatherData.enqueue(new Callback<Weather>() {
-            @Override
-            public void onResponse(Call<Weather> call, Response<Weather> response) {
-                Currently currently = response.body().getCurrently();
-                Log.d(TAG, "Temperature = " + currently.getTemperature());
-
-            }
-
-            @Override
-            public void onFailure(Call<Weather> call, Throwable t) {
-//                Toast.makeText(WeatherServiceProvider.this,
-//                        "Unable to fetch weather data.",
-//                        Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onFailure: Unable to fetch weather data.");
-
-            }
-        });
+        weatherData.enqueue(callback);
     }
 }
