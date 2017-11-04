@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.thedancercodes.darkskyclient.MainActivity;
+import com.thedancercodes.darkskyclient.events.ErrorEvent;
 import com.thedancercodes.darkskyclient.events.WeatherEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -50,21 +51,26 @@ public class WeatherServiceProvider {
             @Override
             public void onResponse(Call<Weather> call, Response<Weather> response) {
                 Weather weather = response.body();
-                Currently currently = weather.getCurrently();
-                Log.d(TAG, "Temperature = " + currently.getTemperature());
+                if (weather != null) {
+                    Currently currently = weather.getCurrently();
+                    Log.d(TAG, "Temperature = " + currently.getTemperature());
 
-                // Post Events
-                EventBus.getDefault().post(new WeatherEvent(weather));
+                    // Post Events
+                    EventBus.getDefault().post(new WeatherEvent(weather));
+                } else {
+                    Log.d(TAG, "No Response: Check Secret Key.");
 
+                    // Post Error Event for No Response/ Invalid token
+                    EventBus.getDefault().post(new ErrorEvent("No weather data available."));
+                }
             }
 
             @Override
             public void onFailure(Call<Weather> call, Throwable t) {
-//                Toast.makeText(WeatherServiceProvider.this,
-//                        "Unable to fetch weather data.",
-//                        Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onFailure: Unable to fetch weather data.");
+                Log.d(TAG, "onFailure: Unable to connect to weather server.");
 
+                // Post Error Event
+                EventBus.getDefault().post(new ErrorEvent("Unable to connect to weather server."));
             }
         });
     }

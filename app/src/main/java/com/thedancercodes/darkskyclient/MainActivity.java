@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thedancercodes.darkskyclient.events.ErrorEvent;
 import com.thedancercodes.darkskyclient.events.WeatherEvent;
 import com.thedancercodes.darkskyclient.services.WeatherService;
 import com.thedancercodes.darkskyclient.services.WeatherServiceProvider;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         //tempTextView = (TextView) findViewById(R.id.tempTextView);
         ButterKnife.bind(this);
     }
+
     // Register and unregister your subscriber.
     @Override
     public void onStart() {
@@ -55,13 +57,19 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    // Use @Subscrice to receive the event
+    // Subscrice to receive the Weather event
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWeatherEvent(WeatherEvent weatherEvent) {
 
         // When weather event is triggered, you get the weather here
         Currently currently = weatherEvent.getWeather().getCurrently();
         tempTextView.setText(String.valueOf(Math.round(currently.getTemperature())));
+    }
+
+    // Subscrice to receive the Error event
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onErrorEvent(ErrorEvent errorEvent) {
+        Toast.makeText(this, errorEvent.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private void requestCurrentWeather(double lat, double lng) {
