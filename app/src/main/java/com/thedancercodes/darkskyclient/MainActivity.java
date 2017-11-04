@@ -6,10 +6,13 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thedancercodes.darkskyclient.events.WeatherEvent;
 import com.thedancercodes.darkskyclient.services.WeatherService;
 import com.thedancercodes.darkskyclient.services.WeatherServiceProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,32 +42,31 @@ public class MainActivity extends AppCompatActivity {
         //tempTextView = (TextView) findViewById(R.id.tempTextView);
         ButterKnife.bind(this);
     }
+    // Register and unregister your subscriber.
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    // Use @Subscrice to receive the event
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onWeatherEvent(WeatherEvent weatherEvent) {
+
+        // When weather event is triggered, you get the weather here
+        Currently currently = weatherEvent.getWeather().getCurrently();
+        tempTextView.setText(String.valueOf(Math.round(currently.getTemperature())));
+    }
 
     private void requestCurrentWeather(double lat, double lng) {
         // Implement Weather Service Provider
         WeatherServiceProvider weatherServiceProvider = new WeatherServiceProvider();
-
-        Callback callback = new Callback<Weather>() {
-            @Override
-            public void onResponse(Call<Weather> call, Response<Weather> response) {
-                Currently currently = response.body().getCurrently();
-                Log.d(TAG, "Temperature = " + currently.getTemperature());
-
-                // Access TextView to display temperature
-                tempTextView.setText(String.valueOf(Math.round(currently.getTemperature())));
-
-            }
-
-            @Override
-            public void onFailure(Call<Weather> call, Throwable t) {
-//                Toast.makeText(WeatherServiceProvider.this,
-//                        "Unable to fetch weather data.",
-//                        Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onFailure: Unable to fetch weather data.");
-
-            }
-        };
-
-        weatherServiceProvider.getWeather(lat, lng, callback);
+        weatherServiceProvider.getWeather(lat, lng);
     }
 }

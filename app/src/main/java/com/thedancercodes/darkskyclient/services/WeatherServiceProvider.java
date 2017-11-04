@@ -4,6 +4,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.thedancercodes.darkskyclient.MainActivity;
+import com.thedancercodes.darkskyclient.events.WeatherEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import models.Currently;
 import models.Weather;
@@ -36,13 +39,33 @@ public class WeatherServiceProvider {
         return this.retrofit;
     }
 
-    public void getWeather(double lat, double lng, Callback callback) {
+    public void getWeather(double lat, double lng) {
         // Implementation of WeatherService Interface
         WeatherService weatherService = getRetrofit().create(WeatherService.class);
 
         // Each Call from the created WeatherService can make a synchronous or asynchronous HTTP
         // request to the remote webserver.
         Call<Weather> weatherData = weatherService.getWeather(lat, lng);
-        weatherData.enqueue(callback);
+        weatherData.enqueue(new Callback<Weather>() {
+            @Override
+            public void onResponse(Call<Weather> call, Response<Weather> response) {
+                Weather weather = response.body();
+                Currently currently = weather.getCurrently();
+                Log.d(TAG, "Temperature = " + currently.getTemperature());
+
+                // Post Events
+                EventBus.getDefault().post(new WeatherEvent(weather));
+
+            }
+
+            @Override
+            public void onFailure(Call<Weather> call, Throwable t) {
+//                Toast.makeText(WeatherServiceProvider.this,
+//                        "Unable to fetch weather data.",
+//                        Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onFailure: Unable to fetch weather data.");
+
+            }
+        });
     }
 }
