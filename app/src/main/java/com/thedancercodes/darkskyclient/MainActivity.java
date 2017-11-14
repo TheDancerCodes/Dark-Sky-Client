@@ -11,6 +11,7 @@ import com.thedancercodes.darkskyclient.events.ErrorEvent;
 import com.thedancercodes.darkskyclient.events.WeatherEvent;
 import com.thedancercodes.darkskyclient.services.WeatherService;
 import com.thedancercodes.darkskyclient.services.WeatherServiceProvider;
+import com.thedancercodes.darkskyclient.util.WeatherIconUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -78,22 +79,11 @@ public class MainActivity extends AppCompatActivity {
         // Setting the summary text
         summaryTextView.setText(currently.getSummary());
 
-        // Create a HashMap and assign icon drawable for icon name.
-        Map<String, Integer> iconMap = new HashMap<>();
-        iconMap.put("clear-day", R.drawable.ic_clear_day);
-        iconMap.put("clear-night", R.drawable.ic_clear_night);
-        iconMap.put("rain", R.drawable.ic_rain);
-        iconMap.put("snow", R.drawable.ic_snow);
-        iconMap.put("sleet", R.drawable.ic_sleet);
-        iconMap.put("wind", R.drawable.ic_wind);
-        iconMap.put("fog", R.drawable.ic_fog);
-        iconMap.put("cloudy", R.drawable.ic_cloudy);
-        iconMap.put("partly-cloudy-day", R.drawable.ic_partly_cloudy_day);
-        iconMap.put("partly-cloudy-night", R.drawable.ic_partly_cloudy_night);
-        iconMap.put("thunderstorm", R.drawable.ic_thunderstorm);
 
-        // Setting the icon dynamically
-        iconImageView.setImageResource(iconMap.get(currently.getIcon()));
+
+        // Setting the icon dynamically;
+        // Referencing HashMap from WeatherIconUtil
+        iconImageView.setImageResource(WeatherIconUtil.ICONS.get(currently.getIcon()));
 
     }
 
